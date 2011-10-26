@@ -19,6 +19,7 @@ package com.facebook.android;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -87,6 +88,11 @@ public class FbDialog extends Dialog {
         addContentView(mContent, new LinearLayout.LayoutParams(
                 display.getWidth() - ((int) (dimensions[0] * scale + 0.5f)),
                 display.getHeight() - ((int) (dimensions[1] * scale + 0.5f))));
+        setOnCancelListener(new OnCancelListener() {
+            public void onCancel(DialogInterface dialogInterface) {
+                mListener.onCancel();
+            }
+        });
     }
 
     private void setUpTitle() {
@@ -166,17 +172,27 @@ public class FbDialog extends Dialog {
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             Log.d("Facebook-WebView", "Webview loading URL: " + url);
             super.onPageStarted(view, url, favicon);
-            mSpinner.show();
+            try {
+                mSpinner.show();
+            }
+            catch(Exception e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
-            String title = mWebView.getTitle();
-            if (title != null && title.length() > 0) {
-                mTitle.setText(title);
+            try {
+                String title = mWebView.getTitle();
+                if (title != null && title.length() > 0) {
+                    mTitle.setText(title);
+                }
+                mSpinner.dismiss();
             }
-            mSpinner.dismiss();
+            catch(Exception e) {
+                e.printStackTrace();
+            }
         }
 
     }
