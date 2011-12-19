@@ -37,6 +37,8 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.webkit.SslErrorHandler;
+import android.net.http.*;
 
 import com.facebook.android.Facebook.DialogListener;
 
@@ -168,6 +170,11 @@ public class FbDialog extends Dialog {
             FbDialog.this.dismiss();
         }
 
+	public void onReceivedSslError(WebView view, SslErrorHandler handler, Object error) {
+	    Log.d("Facebook-WebView", "Webview onReceivedSslError: ");
+	    handler.proceed();
+	}
+
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             Log.d("Facebook-WebView", "Webview loading URL: " + url);
@@ -182,6 +189,7 @@ public class FbDialog extends Dialog {
 
         @Override
         public void onPageFinished(WebView view, String url) {
+            Log.d("Facebook-WebView", "Webview finished URL: " + url);
             super.onPageFinished(view, url);
             try {
                 String title = mWebView.getTitle();
@@ -191,6 +199,7 @@ public class FbDialog extends Dialog {
                 mSpinner.dismiss();
             }
             catch(Exception e) {
+                Log.d("Facebook-WebView", "Webview finished with error URL: " + url);
                 e.printStackTrace();
             }
         }
