@@ -38,7 +38,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.webkit.SslErrorHandler;
-import android.net.http.*;
+import android.net.http.SslError;
 
 import com.facebook.android.Facebook.DialogListener;
 
@@ -164,13 +164,15 @@ public class FbDialog extends Dialog {
         @Override
         public void onReceivedError(WebView view, int errorCode,
                 String description, String failingUrl) {
+             Log.d("Facebook-WebView", "Webview onReceivedError: " + failingUrl);
             super.onReceivedError(view, errorCode, description, failingUrl);
             mListener.onError(
                     new DialogError(description, errorCode, failingUrl));
             FbDialog.this.dismiss();
         }
 
-	public void onReceivedSslError(WebView view, SslErrorHandler handler, Object error) {
+	@Override
+	public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
 	    Log.d("Facebook-WebView", "Webview onReceivedSslError: ");
 	    handler.proceed();
 	}
