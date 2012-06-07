@@ -24,18 +24,19 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-
 import com.facebook.android.Facebook.DialogListener;
 
 public class FbDialog extends Dialog {
@@ -167,10 +168,17 @@ public class FbDialog extends Dialog {
         @Override
         public void onReceivedError(WebView view, int errorCode,
                                     String description, String failingUrl) {
+            Log.d("Facebook-WebView", "Webview onReceivedError: " + failingUrl);
             super.onReceivedError(view, errorCode, description, failingUrl);
             mListener.onError(
                     new DialogError(description, errorCode, failingUrl));
             FbDialog.this.dismiss();
+        }
+
+        @Override
+        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+            Log.d("Facebook-WebView", "Webview onReceivedSslError: ");
+            handler.proceed();
         }
 
         @Override
@@ -182,6 +190,7 @@ public class FbDialog extends Dialog {
 
         @Override
         public void onPageFinished(WebView view, String url) {
+            Log.d("Facebook-WebView", "Webview finished URL: " + url);
             super.onPageFinished(view, url);
             mSpinner.dismiss();
             /* 
@@ -191,6 +200,7 @@ public class FbDialog extends Dialog {
             mContent.setBackgroundColor(Color.TRANSPARENT);
             mWebView.setVisibility(View.VISIBLE);
             mCrossImage.setVisibility(View.VISIBLE);
+            mSpinner.dismiss();
         }
     }
 }
